@@ -1,4 +1,4 @@
-# User Story For Admin
+# User Stories For Admin
 
 **Title** Admin logs in
 
@@ -54,3 +54,80 @@ As an admin, I want to run a stored procedure in MySQL CLI to get appointments p
    
 **priority** Medium
 **Story Points** 2
+
+# User Stories for Patient
+
+**Title:** Browse doctors without logging in
+
+As a patient, I want to view a list of doctors without logging in, so that I can explore options before registering.
+
+**Acceptance Criteria:**
+1. Open the Doctors page with no session, I see public info (name, specialty, location).
+2. Filter/search by specialty or name.
+3. Booking actions require sign-up or login.
+ 
+**Priority:** High
+**Story Points:** 2
+
+**Title:** Sign up with email and password
+
+As a patient, I want to sign up using my email and password, so that I can book appointments.
+
+**Acceptance Criteria:**
+1. With valid inputs, an account is created and I’m redirected to the patient dashboard.
+2. Email must be unique; duplicate emails show a clear error.
+3. Password must meet policy (≥8 chars) and match confirmation.
+
+**Priority:** High  **Story Points:** 3
+
+**Notes:** Verify email format; mask password fields.
+
+**Title:** Log in to manage bookings
+
+As a patient, I want to log into the portal, so that I can view and manage my bookings.
+
+**Acceptance Criteria:**
+1. With valid credentials, I’m authenticated and taken to “My Appointments”.
+2. With invalid credentials, I see an error and remain logged out.
+3. After login, I can access actions like reschedule/cancel where permitted.
+
+**Priority:** High  **Story Points:** 2
+
+**Title:** Log out to secure account
+
+As a patient, I want to log out of the portal, so that I can secure my account.
+
+**Acceptance Criteria:**
+1. Click Logout, session ends and redirected to the login page.
+2. After logout, any attempt to open a protected page sends me to the login page.
+3. Session cookies/tokens are invalidated on the server and cleared from the browser.
+
+**Priority:** High  **Story Points:** 1
+
+**Notes:** Show a visible Logout button in the header; consider auto-logout after inactivity.
+
+**Title:** Book a appointment
+
+As a patient, I want to log in and book an hour-long appointment with a doctor, so that I can consult properly.
+
+**Acceptance Criteria:**
+1. Select a doctor and an available 60-minute slot and confirm.
+2. Conflicting or unavailable slots are blocked with a message.
+3. On success, the appointment is saved and a confirmation is shown.
+
+**Priority:** High  **Story Points:** 3
+
+**Notes:** Store duration = 60 minutes.
+
+**Title:** View upcoming appointments
+
+As a patient, I want to view my upcoming appointments, so that I can prepare accordingly.
+
+**Acceptance Criteria:**
+1. The dashboard lists future appointments sorted by date/time.
+2. Each entry shows doctor, date/time, and location/mode.
+3. Past appointments are excluded from the “Upcoming” list.
+
+**Priority:** Medium  **Story Points:** 2
+
+
