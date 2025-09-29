@@ -40,16 +40,16 @@
                 <!-- 14. Add a Search Bar * Include an input field with `id="searchBar"` for admin to search content dynamically. -->
                 <div class="filters">
                 <!-- 15. Add Filter Dropdowns * Use two `<select>` elements: - One for time (AM/PM). - One for filtering by medical specialty (Cardiologist, Dentist, etc.). -->
-                    <search id="timeFilter">
+                    <select id="timeFilter">
                         <option value="" disabled selected>TIME</option>
                         <option value="AM">AM</option>
                         <option value="PM">PM</option>
-                    </search>
-                    <search id="specialtyFilter">
+                    </select>
+                    <select id="specialtyFilter">
                         <option value="" disabled selected>SPECIALTY</option>
                         <option value="Cardiologist">Cardiologist</option>
                         <option value="Dentist">Dentist</option>
-                    </search>
+                    </select>
                 </div>
                 <div id="content"></div>
                 <!-- 16. Add Content Display Area * Insert a `<div id="content"></div>` for dynamic injection of doctor cards or data. -->
