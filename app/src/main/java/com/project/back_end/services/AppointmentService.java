@@ -99,10 +99,16 @@ public class AppointmentService {
         List <Appointment> appointments;
         String doctorEmail = tokenService.extractEmail(token);
         Long doctorId = doctorRepository.findByEmail(doctorEmail).getId();
-        if (patientName == null || patientName.isEmpty()) {
-            appointments = appointmentRepository.findByDoctorIdAndAppointmentTimeBetween(doctorId, date.atStartOfDay(), date.plusDays(1).atStartOfDay());
+        if (date == null) {
+        appointments = (patientName == null || patientName.isBlank())
+            ? appointmentRepository.findByDoctorId(doctorId)
+            : appointmentRepository.findByDoctorIdAndPatient_NameContainingIgnoreCase(doctorId, patientName);
+        } else if (patientName == null || patientName.isBlank()) {
+            appointments = appointmentRepository.findByDoctorIdAndAppointmentTimeBetween(
+                    doctorId, date.atStartOfDay(), date.plusDays(1).atStartOfDay());
         } else {
-            appointments = appointmentRepository.findByDoctorIdAndPatient_NameContainingIgnoreCaseAndAppointmentTimeBetween(doctorId, patientName, date.atStartOfDay(), date.plusDays(1).atStartOfDay());
+            appointments = appointmentRepository.findByDoctorIdAndPatient_NameContainingIgnoreCaseAndAppointmentTimeBetween(
+                    doctorId, patientName, date.atStartOfDay(), date.plusDays(1).atStartOfDay());
         }
         return Map.of("appointments", appointments);
     }

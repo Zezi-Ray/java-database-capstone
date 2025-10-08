@@ -19,6 +19,12 @@ import jakarta.transaction.Transactional;
 //  - Spring Data JPA automatically implements this repository, providing the necessary CRUD functionality and custom queries defined in the interface.
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
    // 2. Custom Query Methods:
+   @Query("SELECT a FROM Appointment a LEFT JOIN FETCH a.doctor d LEFT JOIN FETCH a.patient p " +
+       "WHERE d.id = :doctorId AND LOWER(p.name) LIKE LOWER(CONCAT('%', :patientName, '%'))")
+   List<Appointment> findByDoctorIdAndPatient_NameContainingIgnoreCase(Long doctorId, String patientName);
+   @Query("SELECT a FROM Appointment a LEFT JOIN FETCH a.doctor d WHERE d.id = :doctorId")
+   public List<Appointment> findByDoctorId(Long doctorId);
+   //    - **findByDoctorId**:
    @Query("SELECT a FROM Appointment a LEFT JOIN FETCH a.doctor d LEFT JOIN FETCH d.availableTimes WHERE d.id = :doctorId AND a.appointmentTime BETWEEN :start AND :end")
    public List<Appointment> findByDoctorIdAndAppointmentTimeBetween(Long doctorId, LocalDateTime start, LocalDateTime end);
    //    - **findByDoctorIdAndAppointmentTimeBetween**:

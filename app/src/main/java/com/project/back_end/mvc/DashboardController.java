@@ -19,7 +19,7 @@ public class DashboardController {
     @GetMapping("/adminDashboard/{token}")
     // Handle GET requests to /adminDashboard/{token}
     public String adminDashboard (@PathVariable String token) {
-    // Accept the token as a path variable
+        // Accept the token as a path variable
         // Validate the token for the "admin" role
         if (tokenService.validateToken(token, "admin") == true) {
             return "admin/adminDashboard"; // Forward to admin dashboard view
@@ -35,10 +35,9 @@ public class DashboardController {
     @GetMapping("/doctorDashboard/{token}")
     // Handle GET requests to /doctorDashboard/{token}
     public String doctorDashboard (@PathVariable String token) {
-    // Accept the token as a path variable
-        String error = new ValidationToken().validateToken(token, "doctor");
+        // Accept the token as a path variable
         // Validate the token for the "doctor" role
-        if (error.isEmpty()) {
+        if (tokenService.validateToken(token, "doctor") == true) {
             return "doctor/doctorDashboard"; // Forward to doctor dashboard view
         } 
         // If the token is valid (i.e., no errors returned), forwards the user to the "doctor/doctorDashboard" view.

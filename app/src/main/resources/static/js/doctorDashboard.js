@@ -1,13 +1,13 @@
 // doctorDashboard.js
 
-import {getAllAppointments} from './services/appointmentServices.js';
+import {getAllAppointments} from './services/appointmentRecordService.js';
 // Import getAllAppointments to fetch appointments from the backend
-import {createPatientRow} from './components/patientRow.js';
+import {createPatientRow} from './components/patientRows.js';
 // Import createPatientRow to generate a table row for each patient appointment
 
 const tableBody = document.getElementById('patientTableBody');
 // Get the table body where patient rows will be added
-let selectedDate = new Date().toISOString().split('T')[0];
+let selectedDate = '';
 // Initialize selectedDate with today's date in 'YYYY-MM-DD' format
 const token = localStorage.getItem('token');
 // Get the saved token from localStorage (used for authenticated API calls)
@@ -47,7 +47,7 @@ document.getElementById('datePicker').addEventListener('change', (event) => {
 // Purpose: Fetch and display appointments based on selected date and optional patient name
 async function loadAppointments() {
   try {
-    const appointments = await getAllAppointments(selectedDate, patientName, token);
+    const appointments = await getAllAppointments(patientName, selectedDate, token);
     // Step 1: Call getAllAppointments with selectedDate, patientName, and token
     tableBody.innerHTML = '';
     // Step 2: Clear the table body content before rendering new rows
@@ -64,13 +64,12 @@ async function loadAppointments() {
       // Step 4: If appointments exist:
       appointments.forEach(appointment => {
         // - Loop through each appointment and construct a 'patient' object with id, name, phone, and email
-        const patient = {
-          id: appointment.patientId,
-          name: appointment.patientName,
-          phone: appointment.patientPhone,
-          email: appointment.patientEmail
-        };
-        const row = createPatientRow(appointment);
+        const row = createPatientRow({
+          id: appointment.patient.id,
+          name: appointment.patient.name,
+          phone: appointment.patient.phone,
+          email: appointment.patient.email
+        }, appointment.id, appointment.doctor.id);
         // - Call createPatientRow to generate a table row for the appointment
         tableBody.appendChild(row);
         // - Append each row to the table body
@@ -89,6 +88,8 @@ async function loadAppointments() {
 document.addEventListener('DOMContentLoaded', () => {
   renderContent();
   // Call renderContent() to set up the initial UI layout
+  selectedDate = '';
+  document.getElementById('datePicker').value = selectedDate;
   loadAppointments();
   // Call loadAppointments() to display today's appointments by default
 });

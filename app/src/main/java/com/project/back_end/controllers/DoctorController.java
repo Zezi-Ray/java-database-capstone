@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMethod;
 import com.project.back_end.services.AppService;
 import com.project.back_end.services.DoctorService;
 import org.springframework.http.ResponseEntity;
@@ -82,8 +83,8 @@ public class DoctorController {
     //    - Handles HTTP POST requests for doctor login.
     //    - Accepts a validated `Login` DTO containing credentials.
     //    - Delegates authentication to the `DoctorService` and returns login status and token information.
-    @RequestMapping("/login")
-    public ResponseEntity<Map<String, String>> doctorLogin(Login login) {
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, String>> doctorLogin(@RequestBody Login login) {
         return doctorService.validateDoctor(login);
     }
     // 7. Define the `updateDoctor` Method:

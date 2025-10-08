@@ -1,5 +1,7 @@
 package com.project.back_end.controllers;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import com.project.back_end.models.Appointment;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Map;
 
 // 1. Set Up the Controller Class:
@@ -33,17 +36,18 @@ public class AppointmentController {
     //    - First validates the token for role `"doctor"` using the `Service`.
     //    - If the token is valid, returns appointments for the given patient on the specified date.
     //    - If the token is invalid or expired, responds with the appropriate message and status code.
-    @RequestMapping("/{date}/{patientName}/{token}")
-    public ResponseEntity<Map<String, Object>> getAppointments(String name, LocalDate date, String token) {
-        ResponseEntity<Map<String, String>> tokenValidation = service.validateToken(token, "doctor");
-        if (tokenValidation.getStatusCode().is2xxSuccessful()) {
-            Map<String, Object> appointments = appointmentService.getAppointments(name, date, token);
-            return ResponseEntity.ok(appointments);
-        } else {
-            // Convert Map<String, String> to Map<String, Object> for consistent return type
-            Map<String, Object> errorBody = new java.util.HashMap<>(tokenValidation.getBody());
-            return new ResponseEntity<>(errorBody, tokenValidation.getStatusCode());
+    @GetMapping("/{patientName}/{date}/{token:.+}")
+    public ResponseEntity<Map<String, Object>> getAppointments(@PathVariable("patientName") String patientName, @PathVariable("date") String dateSegment, @PathVariable("token") String token) {
+        String normalizedName = "all".equalsIgnoreCase(patientName) ? null : patientName;
+        LocalDate date = "all".equalsIgnoreCase(dateSegment) ? null : LocalDate.parse(dateSegment);
+        ResponseEntity<Map<String,String>> check = service.validateToken(token,"doctor");
+        if (!check.getStatusCode().is2xxSuccessful()) {
+            return new ResponseEntity<>(new HashMap<>(check.getBody()), check.getStatusCode());
         }
+
+        Map<String,Object> results = appointmentService.getAppointments(normalizedName, date, token);
+        return ResponseEntity.ok(results);
+
     }
     // 4. Define the `bookAppointment` Method:
     //    - Handles HTTP POST requests to create a new appointment.
