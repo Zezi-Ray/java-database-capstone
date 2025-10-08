@@ -23,6 +23,10 @@
     <script src="./js/render.js" defer></script>
     <script src="./js/components/header.js" defer></script>
     <script src="./js/components/footer.js" defer></script>
+    <script>
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+    </script>
     <!-- 9. Add JavaScript Files with `defer` * Link utility and rendering JavaScript files (e.g., `util.js`, `render.js`). * Include scripts for rendering components like header and footer. * Use the `defer` attribute so they load after the HTML is parsed. --> 
 </head>
 
@@ -39,15 +43,15 @@
             <!-- 14. Define the Main Section * Use a semantic `<main>` tag to hold the central content of the page. -->
                 <h2>Select Your Role</h2>
                 <!-- 15. Add a Heading for Role Selection * Display a heading like “Select Your Role” to instruct users. -->
-                <div class="role-buttons">
+                <div class="Buttons">
                 <!-- 16. Add Buttons for Roles * Create buttons for each role: Admin, Patient, and Doctor. * Assign unique identifiers or `onclick` handlers to them as needed. -->
-                    <button id="admin_button" onclick="SelectionRole('admin')">Admin</button>
-                    <button id="doctor_button" onclick="SelectionRole('doctor')">Doctor</button>
-                    <button id="patient_button" onclick="SelectionRole('patient')">Patient</button>
+                    <button id="adminLogin" class="button" onclick="selectRole('admin')">Admin</button>
+                    <button id="doctorLogin" class="button" onclick="selectRole('doctor')">Doctor</button>
+                    <button id="patientLogin" class="button" onclick="selectRole('patient')">Patient</button>
                 </div>
                 <div id="modal" class="modal">
                 <!-- 17. Create a Modal Structure * Add a modal overlay for popups (like login forms). * Include a close button and an inner container for dynamic content. -->
-                    <button id="closeModal">CLOSE</button>
+                    <button id="closeModal" class="close-btn">CLOSE</button>
                     <div id="modal-body"></div>
                 </div>
             </main>

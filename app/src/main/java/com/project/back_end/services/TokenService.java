@@ -3,10 +3,14 @@ package com.project.back_end.services;
 import com.project.back_end.repo.AdminRepository;
 import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.PatientRepository;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Claims;
+
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -26,10 +30,12 @@ public class TokenService {
     private final AdminRepository adminRepository;
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
-    public TokenService(AdminRepository adminRepository, DoctorRepository doctorRepository, PatientRepository patientRepository) {
+    private final String jwt;
+    public TokenService(AdminRepository adminRepository, DoctorRepository doctorRepository, PatientRepository patientRepository, @Value("${jwt.secret}") String jwt) {
         this.adminRepository = adminRepository;
         this.doctorRepository = doctorRepository;
         this.patientRepository = patientRepository;
+        this.jwt = jwt;
     }
     // 3. **getSigningKey Method**
     // This method retrieves the HMAC SHA key used to sign JWT tokens.
@@ -37,7 +43,7 @@ public class TokenService {
     // The `Keys.hmacShaKeyFor()` method converts the secret key string into a valid `SecretKey` for signing and verification of JWTs.
     @Transactional
     public SecretKey getSigningKey() {
-        var key = Keys.hmacShaKeyFor("jwt.secret".getBytes());
+        var key = Keys.hmacShaKeyFor(jwt.getBytes(StandardCharsets.UTF_8));
         return key;
     }
     // 4. **generateToken Method**
@@ -87,8 +93,8 @@ public class TokenService {
             }
             switch (user) {
                 case "admin":
-                    if (adminRepository.findByEmail(email) != null) {
-                        return true;      
+                    if (adminRepository.findByUsername(email) != null) {
+                        return true;
                     }
                     break;
                 case "doctor":

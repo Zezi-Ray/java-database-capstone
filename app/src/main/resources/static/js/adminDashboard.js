@@ -5,11 +5,15 @@
   - Filters doctors by name, time, or specialty
   - Adds a new doctor via modal form */
 
-  import { getDoctors, filterDoctors, saveDoctor } from '../services/doctorService.js';
-  import { openModal } from './modals.js';
-  import { createDoctorCard } from './doctorCard.js';
+import { getDoctors, filterDoctors, saveDoctor } from './services/doctorServices.js';
+import { openModal } from './components/modals.js';
+import { createDoctorCard } from './components/doctorCard.js';
 
-window.onload = async function() {
+const searchBar = document.getElementById("searchBar");
+const timeFilter = document.getElementById("timeFilter");
+const specialtyFilter = document.getElementById("specialtyFilter");
+const contentDiv = document.getElementById("content");
+
   document.getElementById("addDocBtn").addEventListener("click", () => {
   // Attach a click listener to the "Add Doctor" button
     openModal('addDoctor');
@@ -23,7 +27,6 @@ window.onload = async function() {
     try {
       const doctor = await getDoctors();
       // Call getDoctors() from the service layer
-      const contentDiv = document.getElementById("content");
       contentDiv.innerHTML = "";
       // Clear the current content area
       doctor.forEach (doctor => {
@@ -38,6 +41,7 @@ window.onload = async function() {
     }
     // Handle any fetch errors by logging them
   }
+  loadDoctorCards();
 
   document.getElementById("searchBar").addEventListener("input", filterDoctorsOnChange);
   document.getElementById("timeFilter").addEventListener("change", filterDoctorsOnChange);
@@ -48,41 +52,29 @@ window.onload = async function() {
   // Function: filterDoctorsOnChange
   // Purpose: Filter doctors based on name, available time, and specialty
   async function filterDoctorsOnChange() {
-    const search = document.getElementById("searchBar").value.trim();
-    const time = document.getElementById("timeFilter").value;
-    const specialty = document.getElementById("specialtyFilter").value;
-    // Read values from the search bar and filters
-    const name = search.length > 0 ? search : null;
-    const timeValue = time.length > 0 ? time : null;
-    const specialtyValue = specialty.length > 0 ? specialty : null;
-    // Normalize empty values to null
-    
+    const name = searchBar?.value.trim() || null;
+    const time = timeFilter?.options[timeFilter.selectedIndex]?.value || null;
+    const specialty = specialtyFilter?.options[specialtyFilter.selectedIndex]?.value || null;
+
     try {
-      const doctor = await filterDoctors(name, timeValue, specialtyValue);
-      // Call filterDoctors(name, time, specialty) from the service
-      if (doctor.length > 0) {
-        renderDoctorCards(doctor);
-        // If doctors are found:
-        // - Render them using createDoctorCard()
-      } else {
-        document.getElementById("content").innerHTML = "No doctors found with the given filters."
-      }
-      // If no doctors match the filter:
-      // - Show a message: "No doctors found with the given filters."
+      const doctors = await filterDoctors(name, time, specialty);
+      console.debug('filterDoctors result', { name, time, specialty, doctors });
+      renderDoctorCards(doctors);
     } catch (error) {
+      console.error("Error filtering doctors:", error);
       alert("ERROR");
     }
-    // Catch and display any errors with an alert
   }
 
   // Function: renderDoctorCards
   // Purpose: Render a list of doctor cards to the content area
-  function renderDoctorCards(doctor) {
-    const contentDiv = document.getElementById("content");
+  function renderDoctorCards(doctors) {
     contentDiv.innerHTML = "";
-    // Clear the content area
-    doctor.forEach(doctor => {
-    // Loop through the doctors and apend each card to the content area
+    if (!Array.isArray(doctors) || doctors.length === 0) {
+      contentDiv.innerHTML = '<p class="no-results">No doctors found with the current filters.</p>';
+      return;
+    }
+    doctors.forEach(doctor => {
       const card = createDoctorCard(doctor);
       contentDiv.appendChild(card);
     });
@@ -112,7 +104,7 @@ window.onload = async function() {
     try {
       const response = await saveDoctor(doctor, token);
       // Call saveDoctor(doctor, token) from the service
-      if (response.ok) {
+      if (response.success) {
         alert("Doctor added successfully!");
         document.getElementById("modal").style.display = "none";
         window.location.reload();
@@ -120,11 +112,12 @@ window.onload = async function() {
         // - Show a success message
         // - Close the modal and reload the page
       } else {
-        alert("Failed to add doctor. Please try again.");
+        alert(response.message || "Failed to add doctor. Please try again.");
       }
     } catch (error) {
       alert("An error occurred while adding the doctor.");
     }
     // If saving fails, show an error message
   }
-}
+
+  window.adminAddDoctor = adminAddDoctor;

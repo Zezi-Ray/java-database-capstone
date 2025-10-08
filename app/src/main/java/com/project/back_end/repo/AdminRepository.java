@@ -1,7 +1,6 @@
 package com.project.back_end.repo;
 
 import com.project.back_end.models.Admin;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,16 +15,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 //  - Spring Data JPA automatically implements the repository, providing the necessary CRUD functionality.
 public interface AdminRepository extends JpaRepository<Admin, Long> {
     public Admin findByUsername(String username);
-
-    @Query
-    public Admin findByEmail(String email);
-    // Custom Query Method:
-    //  - **findByUsername**:
-    //    - This method allows you to find an Admin by their username.
-    //    - Return type: Admin
-    //    - Parameter: String username
-    //    - It will return an Admin entity that matches the provided username.
-    //    - If no Admin is found with the given username, it returns null.
 }
 
 

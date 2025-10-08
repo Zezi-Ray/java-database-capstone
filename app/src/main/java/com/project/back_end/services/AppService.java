@@ -90,19 +90,19 @@ public class AppService {
     public Map<String, Object> filterDoctor(String name, String specialty, String time) {
         try {
             if (name != null && specialty != null && time != null) {
-                return Map.of("doctors", doctorService.filterDoctorsByNameSpecialtyAndTime(name, specialty, time));
+                return Map.of("doctors", extractDoctors(doctorService.filterDoctorsByNameSpecialtyAndTime(name, specialty, time)));
             } else if (name != null && specialty != null) {
-                return Map.of("doctors", doctorService.filterDoctorByNameAndSpecility(name, specialty));
+                return Map.of("doctors", extractDoctors(doctorService.filterDoctorByNameAndSpecility(name, specialty)));
             } else if (name != null && time != null) {
-                return Map.of("doctors", doctorService.filterDoctorByNameAndTime(name, time));
+                return Map.of("doctors", extractDoctors(doctorService.filterDoctorByNameAndTime(name, time)));
             } else if (specialty != null && time != null) {
-                return Map.of("doctors", doctorService.filterDoctorByTimeAndSpecility(specialty, time));
+                return Map.of("doctors", extractDoctors(doctorService.filterDoctorByTimeAndSpecility(specialty, time)));
             } else if (name != null) {
-                return Map.of("doctors", doctorService.findDoctorByName(name));
+                return Map.of("doctors", extractDoctors(doctorService.findDoctorByName(name)));
             } else if (specialty != null) {
-                return Map.of("doctors", doctorService.filterDoctorsBySpecility(specialty));
+                return Map.of("doctors", extractDoctors(doctorService.filterDoctorsBySpecility(specialty)));
             } else if (time != null) {
-                return Map.of("doctors", doctorService.filterDoctorsByTime(time));
+                return Map.of("doctors", extractDoctors(doctorService.filterDoctorsByTime(time)));
             } else {
                 return Map.of("doctors", doctorService.getDoctors());
             }
@@ -110,6 +110,19 @@ public class AppService {
             e.printStackTrace();
             return Map.of("error", "An error occurred while filtering doctors");
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private java.util.List<Doctor> extractDoctors(Object result) {
+        if (result instanceof java.util.Map<?, ?> map) {
+            Object doctors = map.get("doctors");
+            if (doctors instanceof java.util.List<?> list) {
+                return (java.util.List<Doctor>) list;
+            }
+        } else if (result instanceof java.util.List<?> list) {
+            return (java.util.List<Doctor>) list;
+        }
+        return java.util.List.of();
     }
     // 6. **validateAppointment Method**
     // This method validates if the requested appointment time for a doctor is available.

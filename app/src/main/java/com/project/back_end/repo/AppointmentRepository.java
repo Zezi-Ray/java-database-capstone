@@ -55,7 +55,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
    //      - This method retrieves all appointments for a specific patient with a given status, ordered by the appointment time.
    //      - Return type: List<Appointment>
    //      - Parameters: Long patientId, int status
-   @Query("SELEECT a FROM Appointment a LEFT JOIN FETCH a.doctor d LEFT JOIN FETCH a.patient p WHERE LOWER(d.name) LIKE LOWER(CONCAT('%', :doctorName, '%')) AND p.id = :patientId")
+   @Query("SELECT a FROM Appointment a LEFT JOIN FETCH a.doctor d LEFT JOIN FETCH a.patient p WHERE LOWER(d.name) LIKE LOWER(CONCAT('%', :doctorName, '%')) AND p.id = :patientId")
    public List<Appointment> filterByDoctorNameAndPatientId(String doctorName, Long patientId);
    //    - **filterByDoctorNameAndPatientId**:
    //      - This method retrieves appointments based on a doctor’s name (using a LIKE query) and the patient’s ID.

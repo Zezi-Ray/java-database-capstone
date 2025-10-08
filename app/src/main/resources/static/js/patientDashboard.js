@@ -14,18 +14,20 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("patientSignup");
   if (btn) {
-    btn.addEventListener("click", () => openModal("patientSignup"));
+    btn.addEventListener("click", () => {
+      openModal("patientSignup");
+    });
   }
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  const loginBtn = document.getElementById("patientLogin")
+  const loginBtn = document.getElementById("patientLogin");
   if (loginBtn) {
     loginBtn.addEventListener("click", () => {
-      openModal("patientLogin")
-    })
+      openModal("patientLogin");
+    });
   }
-})
+});
 
 function loadDoctorCards() {
   getDoctors()

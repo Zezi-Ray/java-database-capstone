@@ -8,7 +8,7 @@
 }
 
 /* Base Styles * Set height to 100% for full viewport layout. * Use the 'Roboto' sans-serif font for modern, clean typography. */
-.html, body {
+html, body {
   height: 100%;
   font-family: 'Roboto', sans-serif;
 }
@@ -21,7 +21,7 @@
 }
 
 /* Heading Styles (`h2`) * Set a large font size (`48px`) for prominence. * Add a bottom margin of `50px` for spacing. * Use a dark teal color (`#003e3e`). * Make the font bold and use a blended font stack (`'Alegreya', 'Roboto', sans-serif`) for elegant styling. */
-.h2 {
+h2 {
   font-size: 48px;
   margin-bottom: 50px;
   color: #003e3e;
@@ -37,7 +37,11 @@
   align-items: center;
   flex-direction: column;
   text-align: center;
-  background: url('/assets/images/clinic.jpg') no-repeat center center fixed;
+  background: url('/assets/images/defineRole/index.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 /* Button Styles (`.button`) * Style with a teal green background (`#015c5d`) and white text. * Remove borders and round the corners (`12px`). * Use `10px 20px` padding and set width to `200px`. * Add a top margin of `10px` for spacing. * Enable pointer cursor and readable font size (`16px`). * On hover, change background color to bold red (`#A62B1F`). */
@@ -51,9 +55,16 @@
   margin-top: 10px;
   cursor: pointer;
   font-size: 16px;
-  hover {
+  &:hover {
     background-color: #A62B1F;
   } 
+}
+
+.Buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px; /* Space between buttons */
 }
 
 /* Dashboard Button Styles (`.dashboard-btn`) * Similar styling to `.button` with teal green background (`#015c5d`). * On hover, darken background to deep teal (`#003e3e`) for visual feedback. */
@@ -67,4 +78,14 @@
   margin-top: 10px;
   cursor: pointer;
   font-size: 16px;
+}
+
+.close-btn {
+  background-color: #f4f4f4;
+  color: #333;
+  font-weight: bold;
+  width: 110px;
+  padding: 10px 0;
+  border: none;
+  cursor: pointer;
 }

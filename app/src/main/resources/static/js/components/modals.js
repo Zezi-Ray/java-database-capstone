@@ -98,4 +98,4 @@ export function openModal(type) {
   if (type === 'doctorLogin') {
     document.getElementById('doctorLoginBtn').addEventListener('click', doctorLoginHandler);
   }
-}
+} 

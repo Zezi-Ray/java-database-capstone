@@ -9,7 +9,7 @@ function renderHeader() {
   // 3. Check if the Current Page is the Root Page * The `window.location.pathname` is checked to see if the current page is the root (`/`). If true, the user's session data (role) is removed from `localStorage`, and the header is rendered without any user-specific elements (just the logo and site title).
     localStorage.removeItem("userRole");
     headerDiv.innerHTML = `
-        <header class="header">
+      <header class="header">
         <div class="logo-section">
           <img src="../assets/images/logo/logo.png" alt="Hospital CRM Logo" class="logo-img">
           <span class="logo-title">Hospital CMS</span>
@@ -38,12 +38,12 @@ function renderHeader() {
   else if (role === "admin") {
     // **Admin**: Can add a doctor and log out.
     headerContent += `
-      <button id="addDocBtn" class="adminBtn" onclick="openModal('addDoctor')">Add Doctor</button>
+      <button id="addDocBtn" class="adminBtn">Add Doctor</button>
       <a href="#" onclick="logout()">Logout</a>`;
   } else if (role === "doctor") {
     // **Doctor**: Has a home button and log out.
     headerContent += `
-      <button class="adminBtn"  onclick="SelectionRole('doctor')">Home</button>
+      <button class="adminBtn"  onclick="selectRole('doctor')">Home</button>
       <a href="#" onclick="logout()">Logout</a>`;
   } else if (role === "patient") {
     // **Patient**: Shows login and signup buttons.
@@ -62,25 +62,11 @@ function renderHeader() {
   // 9. Render the Header Content
   headerDiv.innerHTML = headerContent;
   // 10. Attach Event Listeners to Header Buttons * Call `attachHeaderButtonListeners` to add event listeners to any dynamically created buttons in the header (e.g., login, logout, home).
-  attachHeaderButtonListeners();
-  // 11. AttachHeaderButtonListeners Adds event listeners to login buttons for "Doctor" and "Admin" roles. If clicked, it opens the respective login modal.
-  function attachHeaderButtonListeners() {
-    const patient_login_btn = document.getElementById("patientLogin");
-    const patient_signup_btn = document.getElementById("patientSignup");
-
-    if (patient_login_btn) {
-      patient_login_btn.addEventListener("click", () => {
-        openModal("patientLogin");
-      });
-    }
-
-    if (patient_signup_btn) {
-      patient_signup_btn.addEventListener("click", () => {
-        openModal("patientSignup");
-      });
-    }
-  }
+  
 }
+
+// 11. AttachHeaderButtonListeners Adds event listeners to login buttons for "Doctor" and "Admin" roles. If clicked, it opens the respective login modal.
+
 // 12. logout Removes user session data and redirects the user to the root page.
 function logout() {
   localStorage.removeItem("userRole");

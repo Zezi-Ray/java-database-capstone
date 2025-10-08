@@ -1,8 +1,9 @@
 // Import the overlay function for booking appointments from loggedPatient.js
-// Import the deleteDoctor API function to remove doctors (admin role) from docotrServices.js
+// Import the deleteDoctor API function to remove doctors (admin role) from doctorServices.js
 // Import function to fetch patient details (used during booking) from patientServices.js
+import { deleteDoctor } from "../services/doctorServices.js";
 
-export function creatDoctorCard(doctor) {
+export function createDoctorCard(doctor) {
 // Function to create and return a DOM element for a single doctor card
   const card = document.createElement("div");
   // Create the main container for the doctor card
@@ -19,8 +20,8 @@ export function creatDoctorCard(doctor) {
   name.textContent = doctor.name;
   // Create and set the doctor's name
 
-  const specialization = ducument.createElement("p");
-  specialization.textContent = `Specialization: ${doctor.specialization}`;
+  const specialization = document.createElement("p");
+  specialization.textContent = `Specialization: ${doctor.specialty}`;
   // Create and set the doctor's specialization
 
   const email = document.createElement("p");

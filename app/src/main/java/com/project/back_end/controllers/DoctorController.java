@@ -1,7 +1,11 @@
 package com.project.back_end.controllers;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.project.back_end.services.AppService;
 import com.project.back_end.services.DoctorService;
@@ -57,8 +61,8 @@ public class DoctorController {
     //    - Accepts a validated `Doctor` object in the request body and a token for authorization.
     //    - Validates the token for the `"admin"` role before proceeding.
     //    - If the doctor already exists, returns a conflict response; otherwise, adds the doctor and returns a success message.
-    @RequestMapping("/register/{token}")
-    public ResponseEntity<Map<String, String>> saveDoctor(Doctor doctor, String token) {
+    @RequestMapping("/register/{token:.+}")
+    public ResponseEntity<Map<String, String>> saveDoctor(@RequestBody Doctor doctor, @PathVariable("token") String token) {
         ResponseEntity<Map<String, String>> tokenValidation = service.validateToken(token, "admin");
         if (tokenValidation.getStatusCode().is2xxSuccessful()) {
             int isSaved = doctorService.saveDoctor(doctor);
@@ -108,14 +112,51 @@ public class DoctorController {
     //    - Handles HTTP DELETE requests to remove a doctor by ID.
     //    - Requires both doctor ID and an admin token as path variables.
     //    - If the doctor exists, deletes the record and returns a success message; otherwise, responds with a not found or error message.
-    @RequestMapping("/filter/{name}/{time}/{speciality}")
-    public ResponseEntity<Map<String, Object>> filter(String name, String time, String speciality) {
-        return ResponseEntity.ok(Map.of("doctors", service.filterDoctor(name, time, speciality)));
+    @DeleteMapping("/delete/{doctorId}/{token:.+}")
+    public ResponseEntity<Map<String, String>> deleteDoctor(@PathVariable Long doctorId, @PathVariable String token) {
+        ResponseEntity<Map<String, String>> tokenValidation = service.validateToken(token, "admin");
+        if (tokenValidation.getStatusCode().is2xxSuccessful()) {
+            int isDeleted = doctorService.deleteDoctor(doctorId);
+            switch (isDeleted) {
+                case -1:
+                    return ResponseEntity.status(404).body(Map.of("error", "Doctor not found"));
+                case 1:
+                    return ResponseEntity.ok(Map.of("message", "Doctor deleted successfully"));
+                default:    
+                    return ResponseEntity.status(500).body(Map.of("error", "Internal server error"));
+            }
+        } else {
+            return tokenValidation;
+        }
     }
+
     // 9. Define the `filter` Method:
-    //    - Handles HTTP GET requests to filter doctors based on name, time, and specialty.
-    //    - Accepts `name`, `time`, and `speciality` as path variables.
-    //    - Calls the shared `Service` to perform filtering logic and returns matching doctors in the response.
+    //    - Handles HTTP GET requests to filter doctors based on optional criteria: name, time, and specialty.
+    //    - Accepts these criteria as request parameters.
+    //    - Normalizes input values to handle null, blank, "null", or "undefined" strings.
+    //    - Delegates filtering logic to the shared `AppService` and returns the filtered list of doctors.
+    @RequestMapping("/filter")
+    public ResponseEntity<Map<String, Object>> filter(
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String time,
+        @RequestParam(required = false) String speciality) {
 
+        return ResponseEntity.ok(
+            Map.of("doctors", service.filterDoctor(
+                    normalize(name),
+                    normalize(speciality),
+                    normalize(time)
+            )));
 
+    }
+
+    private String normalize(String value) {
+        if (value == null ||
+            value.isBlank() ||
+            "null".equalsIgnoreCase(value) ||
+            "undefined".equalsIgnoreCase(value)) {
+            return null;
+        }
+        return value;
+    }
 }
