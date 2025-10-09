@@ -6,7 +6,7 @@ const PATIENT_API = API_BASE_URL + '/patient'
 //For creating a patient in db
 export async function patientSignup(data) {
   try {
-    const response = await fetch(`${PATIENT_API}`,
+    const response = await fetch(`${PATIENT_API}/register`,
       {
         method: "POST",
         headers: {
@@ -55,17 +55,16 @@ export async function getPatientData(token) {
 }
 
 // the Backend API for fetching the patient record(visible in Doctor Dashboard) and Appointments (visible in Patient Dashboard) are same based on user(patient/doctor).
-export async function getPatientAppointments(id, token, user) {
+export async function getPatientAppointments(id, token) {
   try {
-    const response = await fetch(`${PATIENT_API}/${id}/${user}/${token}`);
+    const response = await fetch(`${PATIENT_API}/appointments/${id}/${token}`);
     const data = await response.json();
     console.log(data.appointments)
     if (response.ok) {
       return data.appointments;
     }
     return null;
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error fetching patient details:", error);
     return null;
   }
@@ -73,7 +72,9 @@ export async function getPatientAppointments(id, token, user) {
 
 export async function filterAppointments(condition, name, token) {
   try {
-    const response = await fetch(`${PATIENT_API}/filter/${condition}/${name}/${token}`, {
+    const normalizedCondition = condition ? encodeURIComponent(condition) : 'all';
+    const normalizedName = name ? encodeURIComponent(name) : 'all';
+    const response = await fetch(`${PATIENT_API}/filter/${normalizedCondition}/${normalizedName}/${token}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

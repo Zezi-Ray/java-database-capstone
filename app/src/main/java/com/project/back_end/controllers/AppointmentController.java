@@ -9,7 +9,8 @@ import com.project.back_end.services.AppService;
 import com.project.back_end.services.AppointmentService;
 import org.springframework.http.ResponseEntity;
 import com.project.back_end.models.Appointment;
-
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class AppointmentController {
     //    - Uses service logic to validate the appointment data (e.g., check for doctor availability and time conflicts).
     //    - Returns success if booked, or appropriate error messages if the doctor ID is invalid or the slot is already taken.
     @PostMapping("/{token}")
-    public ResponseEntity<Map<String, String>> bookAppointment(Appointment appointment, String token) {
+    public ResponseEntity<Map<String, String>> bookAppointment(@RequestBody Appointment appointment, @PathVariable String token) {
         ResponseEntity<Map<String, String>> tokenValidation = service.validateToken(token, "patient");
         if (tokenValidation.getStatusCode().is2xxSuccessful()) {
             int isValid = service.validateAppointment(appointment);
@@ -82,8 +83,8 @@ public class AppointmentController {
     //    - Validates the token for `"patient"` role.
     //    - Delegates the update logic to the `AppointmentService`.
     //    - Returns an appropriate success or failure response based on the update result.
-    @RequestMapping("/update/{token}")
-    public ResponseEntity<Map<String, String>> updateAppointment(Appointment appointment, String token) {
+    @PutMapping("/update/{token}")
+    public ResponseEntity<Map<String, String>> updateAppointment(@RequestBody Appointment appointment, @PathVariable String token) {
         ResponseEntity<Map<String, String>> tokenValidation = service.validateToken(token, "patient");
         if (tokenValidation.getStatusCode().is2xxSuccessful()) {
             return appointmentService.updateAppointment(appointment);

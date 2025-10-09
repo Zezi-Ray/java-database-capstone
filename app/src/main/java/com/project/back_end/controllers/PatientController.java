@@ -7,8 +7,11 @@ import com.project.back_end.services.AppService;
 import com.project.back_end.services.PatientService;
 import org.springframework.http.ResponseEntity;
 import java.util.Map;
+import java.util.HashMap;
 import com.project.back_end.DTO.Login;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 // 1. Set Up the Controller Class:
 //    - Annotate the class with `@RestController` to define it as a REST API controller for patient-related operations.
@@ -30,16 +33,13 @@ public class PatientController {
     //    - Validates the token for the `"patient"` role using the shared service.
     //    - If the token is valid, returns patient information; otherwise, returns an appropriate error message.
     @RequestMapping("/{token}")
-    public ResponseEntity<Object> getPatient(String token) {
-        ResponseEntity<Map<String, String>> tokenValidation = service.validateToken(token, "patient");
-        if (tokenValidation.getStatusCode().is2xxSuccessful()) {
-            Object patient = patientService.getPatientDetails(token);
-            return ResponseEntity.ok(patient);
-        } else {
-            // Convert Map<String, String> to Map<String, Object> for consistent return type
-            Map<String, Object> errorBody = new java.util.HashMap<>(tokenValidation.getBody());
-            return new ResponseEntity<>(errorBody, tokenValidation.getStatusCode());
-        }
+    public ResponseEntity<Map<String, Object>> getPatient(@PathVariable String token) {
+        var tokenValidation = service.validateToken(token, "patient");
+        if (!tokenValidation.getStatusCode().is2xxSuccessful()) {
+            return new ResponseEntity<>(new HashMap<>(tokenValidation.getBody()), tokenValidation.getStatusCode());
+        } 
+        var patientResponse = patientService.getPatientDetails(token);
+        return new ResponseEntity<Map<String, Object>>(patientResponse.getBody(), patientResponse.getStatusCode());
     }
     // 4. Define the `createPatient` Method:
     //    - Handles HTTP POST requests for patient registration.
@@ -47,9 +47,9 @@ public class PatientController {
     //    - First checks if the patient already exists using the shared service.
     //    - If validation passes, attempts to create the patient and returns success or error messages based on the outcome.
     @RequestMapping("/register")
-    public ResponseEntity<Map<String, String>> createPatient(Patient patient) {
+    public ResponseEntity<Map<String, String>> createPatient(@RequestBody Patient patient) {
         boolean exists = service.validatePatient(patient);
-        if (exists) {
+        if (!exists) {
             return ResponseEntity.status(409).body(Map.of("error", "Patient already exists"));
         } else {
             int result = patientService.createPatient(patient);
@@ -66,7 +66,7 @@ public class PatientController {
     //    - Delegates authentication to the `validatePatientLogin` method in the shared service.
     //    - Returns a response with a token or an error message depending on login success.
     @RequestMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(Login login) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody Login login) {
         return service.validatePatientLogin(login);
     }
     // 6. Define the `getPatientAppointment` Method:
@@ -75,7 +75,7 @@ public class PatientController {
     //    - Validates the token using the shared service.
     //    - If valid, retrieves the patient's appointment data from `PatientService`; otherwise, returns a validation error.
     @GetMapping("/appointments/{id}/{token}")
-    public ResponseEntity<Map<String, Object>> getPatientAppointments(Long id, String token) {
+    public ResponseEntity<Map<String, Object>> getPatientAppointments(@PathVariable Long id, @PathVariable String token) {
         ResponseEntity<Map<String, String>> tokenValidation = service.validateToken(token, "patient");
         if (tokenValidation.getStatusCode().is2xxSuccessful()) {
             ResponseEntity<Map<String, Object>> appointments = patientService.getPatientAppointment(id, token);
@@ -92,15 +92,20 @@ public class PatientController {
     //    - Token must be valid for a `"patient"` role.
     //    - If valid, delegates filtering logic to the shared service and returns the filtered result.
     @GetMapping("/filter/{condition}/{name}/{token}")
-    public ResponseEntity<Map<String, Object>> filterPatient(String condition, String name, String token) {
+    public ResponseEntity<Map<String, Object>> filterPatientAppointment(@PathVariable String condition, @PathVariable String name, @PathVariable String token) {
+        String normalizedCondition = normalize(condition);
+    String normalizedName = normalize(name);
         ResponseEntity<Map<String, String>> tokenValidation = service.validateToken(token, "patient");
         if (tokenValidation.getStatusCode().is2xxSuccessful()) {
-            return service.filterPatient(condition, name, token);
+            return service.filterPatient(normalizedCondition, normalizedName, token);
         } else {
             // Convert Map<String, String> to Map<String, Object> for consistent return type
             Map<String, Object> errorBody = new java.util.HashMap<>(tokenValidation.getBody());
             return new ResponseEntity<>(errorBody, tokenValidation.getStatusCode());
         }
+    }
+    private String normalize(String value) {
+        return (value == null || value.isBlank() || "all".equalsIgnoreCase(value)) ? null : value;
     }
 }
 

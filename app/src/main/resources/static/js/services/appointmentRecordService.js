@@ -47,7 +47,7 @@ export async function bookAppointment(appointment, token) {
 
 export async function updateAppointment(appointment, token) {
   try {
-    const response = await fetch(`${APPOINTMENT_API}/${token}`, {
+    const response = await fetch(`${APPOINTMENT_API}/update/${token}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"

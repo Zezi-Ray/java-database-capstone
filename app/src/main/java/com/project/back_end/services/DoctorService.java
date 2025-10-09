@@ -4,8 +4,12 @@ import com.project.back_end.repo.AppointmentRepository;
 import com.project.back_end.repo.DoctorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import com.project.back_end.DTO.Login;
 import com.project.back_end.models.Appointment;
 import com.project.back_end.models.Doctor;
@@ -41,11 +45,12 @@ public class DoctorService {
         if (doctor == null) {
             return List.of(); // Return empty list if doctor not found
         }
-        List<String> availableTimes = doctor.getAvailableTimes();
         List<Appointment> bookedTimes = appointmentRepository.findByDoctorIdAndAppointmentTimeBetween(doctorId, date.atStartOfDay(), date.plusDays(1).atStartOfDay());
+        List<String> availableTimes = new ArrayList<>(doctor.getAvailableTimes());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         for (Appointment appointment : bookedTimes) {
-            String time = String.format("%02d:%02d", appointment.getAppointmentTime().getHour(), appointment.getAppointmentTime().getMinute());
-            availableTimes.remove(time);
+            String bookedStart = appointment.getAppointmentTime().toLocalTime().format(formatter);
+            availableTimes.removeIf(slot -> slot.startsWith(bookedStart));
         }
         return availableTimes;
     }
@@ -133,7 +138,7 @@ public class DoctorService {
         if (doctor == null) {
             return Map.of("message", "No doctors found with the given name");
         }
-        return Map.of("doctor", doctor);
+        return Map.of("doctors", doctor);
     }
     // 10. **findDoctorByName Method**:
     //    - Finds doctors based on partial name matching and returns the list of doctors with their available times.

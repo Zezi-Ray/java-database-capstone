@@ -104,8 +104,12 @@ function filterDoctorsOnChange() {
   const specialty = filterSpecialty.length > 0 ? filterSpecialty : null;
 
   filterDoctors(name, time, specialty)
-    .then(response => {
-      const doctors = response.doctors;
+    .then(result => {
+      const doctors = Array.isArray(result)
+        ? result
+        : Array.isArray(result?.doctors)
+          ? result.doctors
+          : [];
       const contentDiv = document.getElementById("content");
       contentDiv.innerHTML = "";
 

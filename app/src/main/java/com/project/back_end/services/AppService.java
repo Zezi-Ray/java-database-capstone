@@ -14,6 +14,10 @@ import com.project.back_end.models.Patient;
 import jakarta.transaction.Transactional;
 
 import com.project.back_end.repo.AppointmentRepository;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
 
@@ -140,13 +144,27 @@ public class AppService {
             if (doctor == null) {
                 return -1; // Doctor does not exist
             } else {
-                var availableSlots = doctorService.getDoctorAvailability(appointment.getDoctor().getId(), appointment.getAppointmentTime().toLocalDate());
-                for (var slot : availableSlots) {
-                    if (slot.equals(appointment.getAppointmentTime().toLocalTime().toString())) {
-                        return 1; // Valid appointment time
-                    }
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                String requestedStart = appointment.getAppointmentTime().toLocalTime().format(formatter);
+
+                List<String> configuredSlots = doctor.getAvailableTimes() == null
+                        ? Collections.emptyList()
+                        : doctor.getAvailableTimes();
+                boolean slotConfigured = configuredSlots.stream()
+                        .anyMatch(slot -> slot.startsWith(requestedStart));
+                if (!slotConfigured) {
+                    return 0;
                 }
-                return 0; // Invalid appointment time
+
+                LocalDateTime start = appointment.getAppointmentTime().withSecond(0).withNano(0);
+                LocalDateTime end = start.plusMinutes(1);
+                List<Appointment> overlapping = appointmentRepository
+                        .findByDoctorIdAndAppointmentTimeBetween(doctor.getId(), start, end);
+
+                boolean hasConflict = overlapping.stream()
+                        .anyMatch(existing -> appointment.getId() == null
+                                || !existing.getId().equals(appointment.getId()));
+                return hasConflict ? 0 : 1;
             }
         } catch (Exception e) {
             e.printStackTrace();

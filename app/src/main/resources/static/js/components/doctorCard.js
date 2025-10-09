@@ -1,7 +1,9 @@
 // Import the overlay function for booking appointments from loggedPatient.js
 // Import the deleteDoctor API function to remove doctors (admin role) from doctorServices.js
 // Import function to fetch patient details (used during booking) from patientServices.js
+import { showBookingOverlay } from "../loggedPatient.js";
 import { deleteDoctor } from "../services/doctorServices.js";
+import { getPatientData } from "../services/patientServices.js";
 
 export function createDoctorCard(doctor) {
 // Function to create and return a DOM element for a single doctor card
@@ -102,7 +104,7 @@ export function createDoctorCard(doctor) {
     bookBtn.textContent = "Book Now";
     // Create a book now button
 
-    bookBtn.addEventListener("click", async () => {
+    bookBtn.addEventListener("click", async (event) => {
     // Handle booking logic for logged-in patient   
       const token = localStorage.getItem("token");
       if (!token) {
@@ -113,7 +115,7 @@ export function createDoctorCard(doctor) {
       }
 
       try {
-        const patient = await fetchPatientDetails(token);
+        const patient = await getPatientData(token);
         // Fetch patient details using the token
         if (!patient) {
           alert("Failed to fetch patient details. Please log in again.");
@@ -121,7 +123,7 @@ export function createDoctorCard(doctor) {
           return;
         }
 
-        showBookingOverlay(doctor, patient);
+        showBookingOverlay(event, doctor, patient);
         // Show booking overlay with doctor and patient info
       } catch (error) {
         console.error("Error fetching patient details:", error);
