@@ -33,17 +33,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (appointmentId && token) {
     try {
       const response = await getPrescription(appointmentId, token);
-      console.log("getPrescription :: ", response);
-
-      // Now, check if the prescription exists in the response and access it from the array
-      if (response.prescription && response.prescription.length > 0) {
-        const existingPrescription = response.prescription[0]; // Access first prescription object
-        patientNameInput.value = existingPrescription.patientName || YOU;
-        medicinesInput.value = existingPrescription.medication || "";
-        dosageInput.value = existingPrescription.dosage || "";
-        notesInput.value = existingPrescription.doctorNotes || "";
+      const prescriptions = response?.body?.prescriptions || [];
+      if (prescriptions.length > 0) {
+        const { patientName, medication, dosage, doctorNotes } = prescriptions[0];
+        patientNameInput.value = patientName || "";
+        medicinesInput.value = medication || "";
+        dosageInput.value = dosage || "";
+        notesInput.value = doctorNotes || "";
       }
-
     } catch (error) {
       console.warn("No existing prescription found or failed to load:", error);
     }

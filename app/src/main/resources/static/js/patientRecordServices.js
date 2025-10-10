@@ -1,6 +1,8 @@
 // patientRecordServices.js
 import { getPatientAppointments } from "./services/patientServices.js";
 import { createPatientRecordRow } from './components/patientRecordRow.js';
+import { getAllAppointments } from "./services/appointmentRecordService.js";
+
 
 const tableBody = document.getElementById("patientTableBody");
 const token = localStorage.getItem("token");
@@ -14,14 +16,29 @@ document.addEventListener("DOMContentLoaded", initializePage);
 async function initializePage() {
   try {
     if (!token) throw new Error("No token found");
+    const role = localStorage.getItem("userRole");
+    let appointments = [];
 
-    const appointmentData = await getPatientAppointments(patientId, token, "doctor") || [];
+    if (role === "patient") {
+      appointments = await getPatientAppointments(patientId, token) || [];
+    } else if (role === "doctor") {
+      const name = urlParams.get("name") || "all";
+      const all = await getAllAppointments(name, "all", token) || [];
+      appointments = all
+        .filter(app => (app.patientId ?? app.patient?.id) == patientId)
+        .map(app => ({
+          ...app,
+          patientId: app.patientId ?? app.patient?.id,
+          appointmentDate:
+            app.appointmentDate ??
+            (app.appointmentTime ? app.appointmentTime.split("T")[0] : null),
+        }));
+    } else {
+      console.warn("Unsupported role:", role);
+    }
 
-    // Filter by both patientId and doctorId
-    const filteredAppointments = appointmentData.filter(app =>
-      app.doctorId == doctorId);
-    console.log(filteredAppointments)
-    renderAppointments(filteredAppointments);
+    renderAppointments(appointments);
+
   } catch (error) {
     console.error("Error loading appointments:", error);
     alert("❌ Failed to load your appointments.");
