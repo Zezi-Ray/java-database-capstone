@@ -83,6 +83,22 @@
     color: #fff;
   }
 
+  .btn-cancel {
+    background-color: #A62B1F;
+    color: #fff;
+    padding: 14px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 12px;
+  }
+  .btn-cancel:hover {
+    background-color: #7a1f15;
+  }
+
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(30px); }
     to   { opacity: 1; transform: translateY(0); }

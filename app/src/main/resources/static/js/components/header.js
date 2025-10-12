@@ -77,8 +77,15 @@ function logout() {
 function logoutPatient() {
   localStorage.removeItem("token");
   localStorage.setItem("userRole", "patient");
-  window.location.href = "/pages/loggedPatientDashboard.html";
+  window.location.href = "/pages/patientDashboard.html";
 }
 // 14. **Render the Header**: Finally, the `renderHeader()` function is called to initialize the header rendering process when the page loads.
 renderHeader();
 
+document.addEventListener('click', (e) => {
+  if(e.target.matches('.logo-img')) {
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("token");
+    window.location.href = '/';
+  }
+});

@@ -1,14 +1,15 @@
+import { getAppointments } from "./components/appointmentRow.js";
 import { savePrescription, getPrescription } from "./services/prescriptionServices.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
   const savePrescriptionBtn = document.getElementById("savePrescription");
+  const cancelPrescriptionBtn = document.getElementById("cancelPrescriptionBtn");
+  const backBtn = document.getElementById("backBtn");
   const patientNameInput = document.getElementById("patientName");
   const medicinesInput = document.getElementById("medicines");
   const dosageInput = document.getElementById("dosage");
   const notesInput = document.getElementById("notes");
   const heading = document.getElementById("heading")
-
-
   const urlParams = new URLSearchParams(window.location.search);
   const appointmentId = urlParams.get("appointmentId");
   const mode = urlParams.get("mode");
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (heading) {
     if (mode === "view") {
       heading.innerHTML = `View <span>Prescription</span>`;
-    } else {
+    } else if (mode === "edit") {
       heading.innerHTML = `Add <span>Prescription</span>`;
     }
   }
@@ -52,7 +53,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     dosageInput.disabled = true;
     notesInput.disabled = true;
     savePrescriptionBtn.style.display = "none";  // Hide the save button
+    cancelPrescriptionBtn.style.display = "inline-block"; // Show the cancel button
+    backBtn.style.display = "none"; // Hide the back button
   }
+  backBtn.addEventListener('click', () => {
+    window.history.back();
+  });
+
+  if (mode === 'edit') {
+    if (getAppointments === null) {
+      savePrescriptionBtn.style.display = "inline-block";  // Show the save button
+    } else {
+      savePrescriptionBtn.style.display = "none";  // Hide the save button if appointments exist
+    }
+    cancelPrescriptionBtn.style.display = "none"; // Hide the cancel button
+    backBtn.style.display = "inline-block"; // Show the back button
+  }
+  cancelPrescriptionBtn.addEventListener('click', () => {
+    window.history.back();
+  });
   // Save prescription on button click
   savePrescriptionBtn.addEventListener('click', async (e) => {
     e.preventDefault();

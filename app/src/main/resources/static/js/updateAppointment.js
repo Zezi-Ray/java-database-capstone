@@ -1,6 +1,8 @@
 // updateAppointment.js
 import { updateAppointment } from "../js/services/appointmentRecordService.js";
 import { getDoctors } from "../js/services/doctorServices.js";
+import { API_BASE_URL } from './config/config.js'
+
 document.addEventListener("DOMContentLoaded", initializePage);
 
 async function initializePage() {
@@ -14,6 +16,8 @@ async function initializePage() {
   const doctorName = urlParams.get("doctorName");
   const appointmentDate = urlParams.get("appointmentDate");
   const appointmentTime = urlParams.get("appointmentTime");
+  const status = urlParams.get("appointmentStatus");
+  const role = urlParams.get("role");
 
   console.log(doctorId)
   if (!token || !patientId) {
@@ -37,6 +41,21 @@ async function initializePage() {
       document.getElementById("doctorName").value = doctorName;
       document.getElementById("appointmentDate").value = appointmentDate;
       document.getElementById("appointmentTime").value = appointmentTime;
+      document.getElementById("status").value = status;
+
+      const dateInput = document.getElementById("appointmentDate");
+      const timeInput = document.getElementById("appointmentTime");
+      const statusSelect = document.getElementById("status");
+      const deleteBtn = document.getElementById("deleteAppointment");
+      if (role === "loggedPatient") {
+        statusSelect.disabled = true; // Patients cannot change status
+      } else if (role === "doctor") {
+        dateInput.disabled = true; // Doctors cannot change date
+        timeInput.disabled = true; // Doctors cannot change time
+        statusSelect.disabled = false; // Doctors can change status
+        deleteBtn.style.display = "none"; // Hide delete button for doctors
+        
+      }
 
       const timeSelect = document.getElementById("appointmentTime");
       doctor.availableTimes.forEach(time => {
@@ -63,14 +82,19 @@ async function initializePage() {
           doctor: { id: doctor.id },
           patient: { id: patientId },
           appointmentTime: `${date}T${startTime}:00`,
-          status: 0
+          status: Number(statusSelect.value ?? status)
         };
 
         const updateResponse = await updateAppointment(updatedAppointment, token);
 
         if (updateResponse.success) {
           alert("Appointment updated successfully!");
-          window.location.href = "/pages/patientAppointments.html"; // Redirect back to the appointments page
+          if (role === "loggedPatient") {
+            window.location.href = "/pages/patientAppointments.html"; // Redirect back to the appointments page
+          } else if (role === "doctor") {
+            window.location.href =`/pages/patientRecord.html?id=${patientId}&doctorId=${doctorId}`;
+            // Redirect back to the doctor's appointments page
+          }
         } else {
           alert("❌ Failed to update appointment: " + updateResponse.message);
         }
@@ -79,5 +103,42 @@ async function initializePage() {
     .catch(error => {
       console.error("Error fetching doctors:", error);
       alert("❌ Failed to load doctor data.");
+    });
+
+    document.getElementById("backBtn").addEventListener("click", () => {
+      window.history.back();
+    });
+
+    document.getElementById("deleteAppointment").addEventListener("click", async () => {
+      if (!confirm("Are you sure you want to delete this appointment?")) {
+        return;
+      }
+  
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Missing session data, redirecting to appointments page.");
+        window.location.href = "/pages/patientAppointments.html";
+        return;
+      }
+  
+      try {
+        const response = await fetch(`${API_BASE_URL}/appointments/cancel/${appointmentId}/${token}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+  
+        if (response.ok) {
+          alert("Appointment deleted successfully!");
+          window.location.href = "/pages/patientAppointments.html"; // Redirect back to the appointments page
+        } else {
+          const errorData = await response.json();
+          alert("❌ Failed to delete appointment: " + errorData.message);
+        }
+      } catch (error) {
+        console.error("Error deleting appointment:", error);
+        alert("❌ An error occurred while deleting the appointment.");
+      }
     });
 }

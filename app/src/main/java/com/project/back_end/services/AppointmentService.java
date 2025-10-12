@@ -57,6 +57,7 @@ public class AppointmentService {
                 return ResponseEntity.status(404).body(Map.of("error", "Appointment not found"));
             }
             existingAppointment.setAppointmentTime(appointment.getAppointmentTime());
+            existingAppointment.setStatus(appointment.getStatus());
             int isValid = appService.validateAppointment(existingAppointment);
             if (isValid != 1) {
                 return ResponseEntity.status(400).body(Map.of("error", "Invalid appointment time"));

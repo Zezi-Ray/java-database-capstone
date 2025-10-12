@@ -55,7 +55,16 @@ public class PrescriptionController {
         if (tokenValidation.getStatusCode().is2xxSuccessful()) {
             Object prescription = prescriptionService.getPrescription(appointmentId);
             return ResponseEntity.ok(prescription);
-        } else {                    
+        } else if (!tokenValidation.getStatusCode().is2xxSuccessful()) {
+            tokenValidation = service.validateToken(token, "patient");
+            if (tokenValidation.getStatusCode().is2xxSuccessful()) {
+                Object prescription = prescriptionService.getPrescription(appointmentId);
+                return ResponseEntity.ok(prescription);
+            } else {
+                Map<String, Object> errorBody = new java.util.HashMap<>(tokenValidation.getBody());
+                return new ResponseEntity<>(errorBody, tokenValidation.getStatusCode());
+            }
+        } else {
             // Convert Map<String, String> to Map<String, Object> for consistent return type
             Map<String, Object> errorBody = new java.util.HashMap<>(tokenValidation.getBody());
             return new ResponseEntity<>(errorBody, tokenValidation.getStatusCode());

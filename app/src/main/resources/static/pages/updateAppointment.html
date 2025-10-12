@@ -39,9 +39,16 @@
                         <select id="appointmentTime" required>
                         </select>
 
+                        <label for="status">Status</label>
+                        <select id="status" required>
+                            <option value="0">Scheduled</option>
+                            <option value="1">Completed</option>
+                            <option value="2">No-show</option>
+                        </select>
+
                         <button type="submit" class="btn-primary" id="updateAppointment">Update Appointment</button>
-                        <button type="button" onclick="window.location.href='/pages/patientAppointments.html'"
-                            class="btn-secondary">Cancel</button>
+                        <button type="button" class="btn-secondary" id="backBtn">Cancel</button>
+                        <button type="button" class="btn-cancel" id="deleteAppointment">Cancel Appointment</button>
                     </form>
                 </div>
             </div>

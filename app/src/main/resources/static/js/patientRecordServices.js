@@ -6,7 +6,6 @@ import { getAllAppointments } from "./services/appointmentRecordService.js";
 
 const tableBody = document.getElementById("patientTableBody");
 const token = localStorage.getItem("token");
-
 const urlParams = new URLSearchParams(window.location.search);
 const patientId = urlParams.get("id");
 const doctorId = urlParams.get("doctorId");
@@ -28,6 +27,7 @@ async function initializePage() {
         .filter(app => (app.patientId ?? app.patient?.id) == patientId)
         .map(app => ({
           ...app,
+          status: app.status,
           patientId: app.patientId ?? app.patient?.id,
           appointmentDate:
             app.appointmentDate ??

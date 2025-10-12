@@ -81,6 +81,18 @@
     cursor: pointer;
   }
 
+  .btn-back {
+    background-color: transparent;
+    color: #333;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-top: 12px;
+    cursor: pointer;
+    text-align: left;
+  }
   .btn-secondary:hover{
     color: #fff;
   }

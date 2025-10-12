@@ -1,5 +1,6 @@
 package com.project.back_end.controllers;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -85,11 +86,13 @@ public class AppointmentController {
     //    - Returns an appropriate success or failure response based on the update result.
     @PutMapping("/update/{token}")
     public ResponseEntity<Map<String, String>> updateAppointment(@RequestBody Appointment appointment, @PathVariable String token) {
-        ResponseEntity<Map<String, String>> tokenValidation = service.validateToken(token, "patient");
-        if (tokenValidation.getStatusCode().is2xxSuccessful()) {
+        ResponseEntity<Map<String, String>> tokenValidationPatient = service.validateToken(token, "patient");
+        ResponseEntity<Map<String, String>> tokenValidationDoctor = service.validateToken(token, "doctor");
+        if (tokenValidationPatient.getStatusCode().is2xxSuccessful() || tokenValidationDoctor.getStatusCode().is2xxSuccessful()) {
             return appointmentService.updateAppointment(appointment);
         } else {
-            return tokenValidation;
+            // Return whichever validation failed (patient by default)
+            return tokenValidationPatient;
         }
     }
     // 6. Define the `cancelAppointment` Method:
@@ -97,8 +100,8 @@ public class AppointmentController {
     //    - Accepts the appointment ID and a token as path variables.
     //    - Validates the token for `"patient"` role to ensure the user is authorized to cancel the appointment.
     //    - Calls `AppointmentService` to handle the cancellation process and returns the result.
-    @RequestMapping("/cancel/{id}/{token}")
-    public ResponseEntity<Map<String, String>> cancelAppointment(Long id, String token) {
+    @DeleteMapping("/cancel/{id}/{token:.+}")
+    public ResponseEntity<Map<String, String>> cancelAppointment(@PathVariable Long id, @PathVariable String token) {
         ResponseEntity<Map<String, String>> tokenValidation = service.validateToken(token, "patient");
         if (tokenValidation.getStatusCode().is2xxSuccessful()) {
             return appointmentService.cancelAppointment(id, token);

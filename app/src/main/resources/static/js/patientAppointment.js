@@ -49,6 +49,7 @@ function renderAppointments(appointments) {
       <td>${appointment.doctorName}</td>
       <td>${appointment.appointmentDate}</td>
       <td>${appointment.appointmentTimeOnly}</td>
+      <td>${appointment.status === 1 ? `<img src="../assets/images/addPrescriptionIcon/addPrescription.png" alt="view" class="prescription-btn" data-id="${appointment.id}">` : "-"}</td>
       <td>${appointment.status == 0 ? `<img src="../assets/images/edit/edit.png" alt="Edit" class="prescription-btn" data-id="${appointment.patientId}">` : "-"}</td>
     `;
 
@@ -57,12 +58,21 @@ function renderAppointments(appointments) {
       actionBtn?.addEventListener("click", () => redirectToUpdatePage(appointment));
     }
 
+    if (appointment.status === 1) {
+      const prescriptionBtn = tr.querySelector(".prescription-btn");
+      prescriptionBtn?.addEventListener("click", () => {
+        const mode = "view";
+        window.location.href = `/pages/addPrescription.html?mode=${mode}&appointmentId=${appointment.id}`;
+      });
+    }
+
     tableBody.appendChild(tr);
   });
 }
 
 function redirectToUpdatePage(appointment) {
   // Prepare the query parameters
+  const role = localStorage.getItem("userRole");
   const queryString = new URLSearchParams({
     appointmentId: appointment.id,
     patientId: appointment.patientId,
@@ -71,6 +81,8 @@ function redirectToUpdatePage(appointment) {
     doctorId: appointment.doctorId,
     appointmentDate: appointment.appointmentDate,
     appointmentTime: appointment.appointmentTimeOnly,
+    appointmentStatus: appointment.status,
+    role,
   }).toString();
 
   // Redirect to the update page with the query string

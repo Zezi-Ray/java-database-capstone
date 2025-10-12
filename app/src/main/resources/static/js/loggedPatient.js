@@ -4,10 +4,19 @@ import { createDoctorCard } from './components/doctorCard.js';
 import { filterDoctors } from './services/doctorServices.js';
 import { bookAppointment } from './services/appointmentRecordService.js';
 
+const role = localStorage.getItem("userRole");
+if (role == "patient" || role == "loggedPatient") {
+ 
+  document.addEventListener("DOMContentLoaded", () => {
+    loadDoctorCards();
+  });
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadDoctorCards();
-});
+  // Filter Input
+  document.getElementById("searchBar").addEventListener("input", filterDoctorsOnChange);
+  document.getElementById("filterTime").addEventListener("change", filterDoctorsOnChange);
+  document.getElementById("filterSpecialty").addEventListener("change", filterDoctorsOnChange);
+}
+
 
 function loadDoctorCards() {
   getDoctors()
@@ -83,15 +92,6 @@ export function showBookingOverlay(e, doctor, patient) {
     }
   });
 }
-
-
-
-// Filter Input
-document.getElementById("searchBar").addEventListener("input", filterDoctorsOnChange);
-document.getElementById("filterTime").addEventListener("change", filterDoctorsOnChange);
-document.getElementById("filterSpecialty").addEventListener("change", filterDoctorsOnChange);
-
-
 
 function filterDoctorsOnChange() {
   const searchBar = document.getElementById("searchBar").value.trim();

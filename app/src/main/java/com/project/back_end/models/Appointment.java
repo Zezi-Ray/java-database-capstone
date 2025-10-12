@@ -1,7 +1,6 @@
 package com.project.back_end.models;
 
 import java.beans.Transient;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -9,7 +8,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.GenerationType;
-
 import java.time.LocalTime;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,7 +64,7 @@ public class Appointment {
   //      - Represents the current status of the appointment. It is an integer where:
   //        - 0 means the appointment is scheduled.
   //        - 1 means the appointment has been completed.
-  //        - 2 means the appointment has been canceled.
+  //        - 2 means the patient did not show up.
   //      - The @NotNull annotation ensures that the status field is not null.
 
   @Transient
