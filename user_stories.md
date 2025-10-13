@@ -44,17 +44,6 @@ As an admin, I want to delete a doctor’s profile from the portal, so that I ca
 **priority** Medium
 **Story Points** 2
 
-**Title** Run monthly appointment stats (stored procedure)
-
-As an admin, I want to run a stored procedure in MySQL CLI to get appointments per month, so that I can track usage statistics.
-
-**Acceptance Criteria:**
-1. Returns rows with month and count.
-2. Results can be exported or recorded for reporting.
-   
-**priority** Medium
-**Story Points** 2
-
 # User Stories For Patient
 
 **Title:** Browse doctors without logging in
@@ -174,17 +163,6 @@ As a doctor, I want to mark time ranges when I am unavailable, so that patients 
 2. If a block overlaps existing bookings, I am warned and asked to reschedule or skip.
 
 **Priority:** High  **Story Points:** 5
-
-**Title:** Update my profile (specialization & contacts)
-
-As a doctor, I want to update my specialization and contact information, so that patients have up-to-date details.
-
-**Acceptance Criteria:**
-1. Required fields are validated (specialization, phone/email format).
-2. After saving, my updated profile appears on the public doctor list.
-3. Changes are audit-logged with timestamp and user.
-
-**Priority:** Medium  **Story Points:** 3
 
 **Title:** View patient details for upcoming appointments
 
