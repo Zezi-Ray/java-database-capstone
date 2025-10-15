@@ -56,6 +56,12 @@ public class AppointmentService {
             if (existingAppointment == null) {
                 return ResponseEntity.status(404).body(Map.of("error", "Appointment not found"));
             }
+            boolean statusChanged = existingAppointment.getStatus() != appointment.getStatus();
+            boolean timeChanged = !existingAppointment.getAppointmentTime().equals(appointment.getAppointmentTime());
+            if (timeChanged == false && statusChanged == true) {
+                appointmentRepository.updateStatus(appointment.getStatus(), existingAppointment.getId());
+                return ResponseEntity.ok(Map.of("message", "Appointment status updated successfully"));
+            }
             existingAppointment.setAppointmentTime(appointment.getAppointmentTime());
             existingAppointment.setStatus(appointment.getStatus());
             int isValid = appService.validateAppointment(existingAppointment);

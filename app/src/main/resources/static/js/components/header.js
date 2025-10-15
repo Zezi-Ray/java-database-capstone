@@ -53,8 +53,8 @@ function renderHeader() {
   } else if (role === "loggedPatient") {
     // **LoggedPatient**: Has home, appointments, and logout options.
     headerContent += `
-      <button id="home" class="adminBtn" onclick="window.location.href='/pages/loggedPatientDashboard.html'">Home</button>
-      <button id="patientAppointments" class="adminBtn" onclick="window.location.href='/pages/patientAppointments.html'">Appointments</button>
+      <button id="home" class="adminBtn" onclick="selectRole('loggedPatient'); window.location.href='/pages/loggedPatientDashboard.html'">Home</button>
+      <button id="patientAppointments" class="adminBtn" onclick="selectRole('loggedPatient'); window.location.href='/pages/patientAppointments.html'">Appointments</button>
       <a href="#" onclick="logoutPatient()">Logout</a>`;
   } 
   // 8. Close the Header Section 
